@@ -25,7 +25,7 @@ start_link(Handler,Num,Context,Endpoints) ->
     {ok,Pid} = supervisor:start_link(?MODULE, []),
 
     lists:foreach(fun(_)->
-      lager:info("starting zq worker"),
+      lager:info("starting zq worker",[]),
       {ok,_} = supervisor:start_child(Pid,[Handler,Context,Endpoints])
     end,lists:seq(1,Num)),
 
