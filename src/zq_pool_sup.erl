@@ -1,3 +1,12 @@
+%%%-------------------------------------------------------------------
+%%% @author Andrew Bennett <andrew@pagodabox.com>
+%%% @author Daniel Barney <daniel@pagodabox.com>
+%%% @copyright (C) 2013, Pagoda Box, Inc.
+%%% @doc
+%%%
+%%% @end
+%%% Created :  28 Feb 2013 by Daniel Barney <daniel@pagodabox.com>
+%%%-------------------------------------------------------------------
 -module(zq_pool_sup).
 
 -behaviour(supervisor).
