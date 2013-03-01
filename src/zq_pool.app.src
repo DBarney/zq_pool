@@ -1,0 +1,18 @@
+{application, zq_pool,
+ [
+  {description, "A worker pool implemented with erlang and erlzmq2"},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  lager,
+                  erlzmq
+                 ]},
+  {env, []},
+  {modules,[
+  	zq_pool
+  	,zq_pool_sup
+  	,zq_pool_worker
+  ]}
+ ]}.
