@@ -30,9 +30,7 @@ Parameters to the pool:
 - Context is the erlzmq2 context that was created using `erlzmq:context()`.
 - The ending list, is a list of Endpoints that the socket should connect to, these do not need to be the `inproc://` protocol, they can be any that zeromq supports.
 
-# callback function definition:
-
-
+## callback function definition:
 
 Jobs submitted to the queue have a minimum of three messages. The first two messages should describe the work that needs to be done. For example, if our zmq workers are interacting with a key value store the three messages might be these:
 
@@ -56,7 +54,7 @@ The job would be sent to the callback module as:
 handle({message,<<"insert">>,<<"foo">>,<<"bar">>}) -> ok.
 ```
 
-Also jobs are not limited to sending only 3 messages, 3 is the minimun, but the maximun is as large as you would like. So taking the key value store idea again, image we are submitting to a list. Instead of sending :
+Also jobs are not limited to sending only 3 messages, 3 is the minimun, but the maximum is as large as you would like. So taking the key value store idea again, image we are submitting to a list. Instead of sending :
 
 ```
 qz_pool:submit(Socket,[<<"append">>,<<"foo">>,<<"bar">>]),
@@ -69,11 +67,11 @@ for each member of the list that we need to add we can just write:
 qz_pool:submit(Socket,[<<"append">>,<<"foo">>,<<"bar">>,<<"bar">>,...]),
 ```
 
-which will generate a large job, but will avoid the overhead of sening so many messages.
+which will generate a large job, but will avoid the overhead of sending so many messages.
 
 The zq_pool_worker will store off the first two messages and then reuse them for all of the rest of the messages that are part of the job. It will then feed the rest of the messages to the call back module one by one.
 
-So:
+So this is what is happening behind the scenes:
 
 ```
 [Cmd= <<"append">>,Key | Values] = AllMessages,
@@ -83,6 +81,6 @@ So:
 lists:foreach(fun(Value) -> CallbackModule:handle({message,Cmd,Key,Value}) end,Values),
 ```
 
-## Warning
+## Warning !!
 
 The only thing that needs to be taken care of by the developer is the zmq context, if this context is not shutdown correctly when the process that created it terminates. The whole erlang VM can hang as a secondary thread is created so not to block the erlang VM whiel performing zmq operations.
