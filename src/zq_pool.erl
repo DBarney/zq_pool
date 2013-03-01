@@ -6,7 +6,7 @@
 
 
 %% wrapper for submitting jobs to the zq_pool
-submit(Socket,[]) -> ok;
+submit(_Socket,[]) -> ok;
 submit(Socket,[Message]) -> 
 	erlzmq:send(Socket,Message,[]);
 submit(Socket,[Message | Tail]) -> 
