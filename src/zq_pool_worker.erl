@@ -56,8 +56,6 @@ start_link(Handler,Context, Endpoints) ->
 %%--------------------------------------------------------------------
 
 init([Handler, Context, Endpoints]) ->
-    lager:info([{worker, zq}],
-               "~s:init. ~p", [?MODULE, Endpoints]),
 
     %% active false and polling may work better, but i'm not sure we would have to run tests
     {ok, Socket} = erlzmq:socket(Context, [pull, {active, true}]),
@@ -136,8 +134,6 @@ handle_info({zmq, Socket, Message, Opts}, State = #state{socket = Socket,
                                                         queue = QueueName}) 
                                                   when  Channel /= undefined; 
                                                         QueueName /= undefined-> 
-    lager:info([{worker, zq}],
-               "~s:handle_info. queue: ~s, channel: ~s, message: ~s", [?MODULE, QueueName, Channel, Message]),
     % TODO: send this message off somewhere!
     Handler:handle({message,QueueName,Channel,Message}),
     case Opts of
@@ -151,9 +147,7 @@ handle_info({zmq, Socket, Message, Opts}, State = #state{socket = Socket,
     end;
     
 
-handle_info(Info, State) ->
-    lager:info([{worker, zq}],
-               "~s:handle_info. ignoring: ~p", [?MODULE, Info]),
+handle_info(_Info, State) ->
     {noreply, State}.
 
 %%--------------------------------------------------------------------
