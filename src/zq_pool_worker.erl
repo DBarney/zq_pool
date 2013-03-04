@@ -140,7 +140,7 @@ handle_info({zmq, Socket, Message, Opts}, State = #state{socket = Socket,
     case Opts of
       [] ->
         %% we send the messages off in one whole group
-        Handler:handle({group,QueueName,Rest,lists:flatten(Messages)}),
+        Handler:handle({group,QueueName,Rest,lists:flatten(NewMessages)}),
         %% and we clear it out
         {noreply, State#state{messages = [],channel = undefined, queue = undefined}};
       [rcvmore] ->
