@@ -22,7 +22,8 @@
                 channel,
                 context,
                 queue,
-                socket}).
+                socket,
+                messages= []}).
 
 %%%===================================================================
 %%% API
@@ -128,13 +129,34 @@ handle_info({zmq, Socket, Channel, [rcvmore]}, State = #state{socket = Socket,
 
 
 
+%% we group messages together and send them in one block
+handle_info({zmq, Socket, Message, Opts}, State = #state{socket = Socket,
+                                                        handler = Handler,
+                                                        channel = <<"zq_pool_group:",Rest/binary>>,
+                                                        queue = QueueName,
+                                                        messages = Messages}) 
+                                                  when  QueueName /= undefined-> 
+    NewMessages = [Message , Messages],
+    case Opts of
+      [] ->
+        %% we send the messages off in one whole group
+        Handler:handle({group,QueueName,Rest,lists:flatten(Messages)}),
+        %% and we clear it out
+        {noreply, State#state{messages = [],channel = undefined, queue = undefined}};
+      [rcvmore] ->
+        %% we wait for more messages
+        {noreply, State#state{messages = NewMessages}}
+    end;
+
+
+%% we spoon feed a meesage to the handler one at a time.
 handle_info({zmq, Socket, Message, Opts}, State = #state{socket = Socket,
                                                         handler = Handler,
                                                         channel = Channel,
                                                         queue = QueueName}) 
                                                   when  Channel /= undefined; 
                                                         QueueName /= undefined-> 
-    % TODO: send this message off somewhere!
+
     Handler:handle({message,QueueName,Channel,Message}),
     case Opts of
       [] ->
